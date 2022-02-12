@@ -16,7 +16,7 @@ class _ProviderDemoPageState extends State<ProviderDemoPage> {
   final tick = Tick();
 
   void onTap() {
-    debugPrint('-> onTap : ${tick.a}');
+    debugPrint('-> onTap : ${tick.i}');
 
     tick.increment();
   }
@@ -138,7 +138,7 @@ class PageBody extends StatelessWidget {
 
           /// 使用 Widget
           Box(
-              i: readTick.a,
+              i: readTick.i,
               str: '  Box -自定义 widget\n\n'
                   '   $readTick\n\n'
                   'rebuild: page build called'),
