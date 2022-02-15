@@ -2,7 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_learn/commons/values.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets.dart';
 import 'notifiers.dart';
+
+/// Provider 是对 InheritedWidget 的封装，如果对 InheritedWidget 不了解则需要先去熟悉一下
+///
+/// Provider 使用 extension 对 BuildContext 进行了扩展，比较常用的有 context.read<T>() 和
+/// context.watch<T>()，BuildContext 本质上就是 Element，而 Inherited 则是通过调用 Element
+/// 的 markNeedsRebuild 来实现在屏幕绘制下一帧重新构建组件的。
+/// 所以使用时需要注意你使用哪个 context 就是代表哪个 Element 会被通知刷新。
+///
+dynamic readme;
 
 /// Provider Demo
 class ProviderDemoPage extends StatefulWidget {
@@ -35,6 +45,7 @@ class _ProviderDemoPageState extends State<ProviderDemoPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: onTap,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -45,75 +56,24 @@ class PageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('\n');
     debugPrint('build -> page widget');
 
-    final readTick = context.read<Tick>();
-
-    return DefaultTextStyle(
-      style: Theme.of(context).textTheme.bodyText1!,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.max,
+    return SingleChildScrollView(
+      child: Wrap(
+        runSpacing: 8,
         children: [
+          Text('每次点击 i 自增1 \n每2次点击 i_2 自增1 \n每4次点击 i_4 自增1'),
+
           /// Consumer
           Consumer<Tick>(
             builder: (_, tick, __) {
               debugPrint('build -> Consumer<Tick>');
 
-              final str = '  Consumer<Tick>\n\n'
-                  '  tick is $tick\n\n'
-                  '  rebuild: tick call notifyListeners';
-
-              return AnimatedContainer(
-                alignment: Alignment.centerLeft,
-                width: blockWidth,
-                height: blockHeight,
+              return InfoBox(
+                label: 'Consumer<Tick>',
                 color: _color(tick.i),
-                duration: animationDuration,
-                child: Text(str),
-              );
-            },
-          ),
-
-          /// Selector
-          Selector<Tick, int>(
-            selector: (_, tick) => tick.a,
-            builder: (_, a, __) {
-              debugPrint('build -> Selector<Tick, int> : (watch a)');
-
-              final str = '  Selector<Tick, int> (watch a)\n\n'
-                  '  a is :$a\n\n'
-                  '  rebuild: tick.a has changed';
-
-              return AnimatedContainer(
-                alignment: Alignment.centerLeft,
-                width: blockWidth,
-                height: blockHeight,
-                color: _color(a),
-                duration: animationDuration,
-                child: Text(str),
-              );
-            },
-          ),
-
-          /// Selector
-          Selector<Tick, int>(
-            selector: (_, tick) => tick.b,
-            builder: (_, b, __) {
-              debugPrint('build -> Selector<Tick, int> : (watch b)');
-
-              final str = '  Selector<Tick, int> (watch b)\n\n'
-                  '  b is $b\n\n'
-                  '  rebuild: tick.b has changed';
-
-              return AnimatedContainer(
-                alignment: Alignment.centerLeft,
-                width: blockWidth,
-                height: blockHeight,
-                color: _color(b),
-                duration: animationDuration,
-                child: Text(str),
+                message: '$tick\n\n'
+                    'Consumer<Tick> 会监听 tick 对象的变化, 每当 tick 对象的 notifyListeners() 函数被调用, builder(...) 都会被重新调用, 即使没有任何改变',
               );
             },
           ),
@@ -121,55 +81,73 @@ class PageBody extends StatelessWidget {
           ///  使用 Builder
           Builder(
             builder: (context) {
-              debugPrint('build -> Builder');
+              debugPrint('build -> Builder context.watch<Tick>()');
 
-              return AnimatedContainer(
-                alignment: Alignment.centerLeft,
-                width: blockWidth,
-                height: blockHeight,
-                color: _color(readTick.i),
-                duration: animationDuration,
-                child: Text('  Builder\n\n'
-                    '  $readTick\n\n'
-                    '  rebuild: page build called  '),
+              final _tick = context.watch<Tick>();
+
+              return InfoBox(
+                label: 'context.watch<Tick>()',
+                color: _color(_tick.i),
+                message: '$_tick\n\n'
+                    'watch 会监听 tick 对象的变化, 每当 tick 对象的 notifyListeners() 函数被调用, builder(...) 都会被重新调用, 即使没有任何改变',
               );
             },
           ),
 
-          /// 使用 Widget
-          Box(
-              i: readTick.i,
-              str: '  Box -自定义 widget\n\n'
-                  '   $readTick\n\n'
-                  'rebuild: page build called'),
+          /// Selector
+          Selector<Tick, int>(
+            selector: (_, obs) => obs.i_2,
+            builder: (_, i_2, __) {
+              debugPrint('build -> Selector<Tick, int> : (watch i_2)');
+
+              return InfoBox(
+                label: 'selector: (_, obs) => obs.i_2',
+                color: _color(i_2),
+                message: 'tick.a: $i_2\n\n'
+                    'selector 仅在 tick.a 发生变化时收到通知, 在不关心其他成员变化的场景中非常适用',
+              );
+            },
+          ),
+
+          /// Selector
+          Selector<Tick, int>(
+            selector: (_, obs) => obs.i_4,
+            builder: (_, i_4, __) {
+              debugPrint('build -> Selector<Tick, int> : (watch i_4)');
+
+              return InfoBox(
+                label: 'selector: (_, obs) => obs.i_4',
+                color: _color(i_4),
+                message: 'tick.b: $i_4\n\n'
+                    'selector 仅在 tick.b 发生变化时收到通知, 在不关心其他成员变化的场景中非常适用',
+              );
+            },
+          ),
+
+          ///  使用 Builder
+          Builder(
+            builder: (context) {
+              final _tick = context.read<Tick>();
+
+              debugPrint('build -> Builder context.read<Tick>()');
+
+              return InfoBox(
+                label: 'context.read<Tick>() 点击调用+',
+                color: _color(_tick.i),
+                message: '$_tick\n\n'
+                    'context.read<Tick>() 在 builder 函数执行时获取 tick 的引用, 在 tick 对象发生变化时并不会刷新当前 widget, 适合用来在子节点调用顶层对象的函数',
+                child: ElevatedButton(
+                    onPressed: () {
+                      debugPrint('-> onTap : ${_tick.i}');
+
+                      _tick.increment();
+                    },
+                    child: Text('点击调用 tick.increment')),
+              );
+            },
+          ),
         ],
       ),
-    );
-  }
-}
-
-class Box extends StatelessWidget {
-  final int i;
-
-  final String str;
-
-  const Box({
-    Key? key,
-    required this.i,
-    required this.str,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    debugPrint('build -> Box');
-
-    return AnimatedContainer(
-      alignment: Alignment.centerLeft,
-      width: blockWidth,
-      height: blockHeight,
-      color: _color(i),
-      duration: animationDuration,
-      child: Text(str),
     );
   }
 }
