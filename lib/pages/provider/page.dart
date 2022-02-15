@@ -15,14 +15,7 @@ import 'notifiers.dart';
 dynamic readme;
 
 /// Provider Demo
-class ProviderDemoPage extends StatefulWidget {
-  const ProviderDemoPage({Key? key}) : super(key: key);
-
-  @override
-  _ProviderDemoPageState createState() => _ProviderDemoPageState();
-}
-
-class _ProviderDemoPageState extends State<ProviderDemoPage> {
+class ProviderDemoPage extends StatelessWidget {
   final tick = Tick();
 
   void onTap() {
