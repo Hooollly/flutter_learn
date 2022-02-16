@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_learn/commons/values.dart';
+import 'package:flutter_learn/commons/urils.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets.dart';
@@ -64,7 +64,7 @@ class PageBody extends StatelessWidget {
 
               return InfoBox(
                 label: 'Consumer<Tick>',
-                color: _color(tick.i),
+                color: asColor(tick.i),
                 message: '$tick\n\n'
                     'Consumer<Tick> 会监听 tick 对象的变化, 每当 tick 对象的 notifyListeners() 函数被调用, builder(...) 都会被重新调用, 即使没有任何改变',
               );
@@ -80,7 +80,7 @@ class PageBody extends StatelessWidget {
 
               return InfoBox(
                 label: 'context.watch<Tick>()',
-                color: _color(_tick.i),
+                color: asColor(_tick.i),
                 message: '$_tick\n\n'
                     'watch 会监听 tick 对象的变化, 每当 tick 对象的 notifyListeners() 函数被调用, builder(...) 都会被重新调用, 即使没有任何改变',
               );
@@ -95,7 +95,7 @@ class PageBody extends StatelessWidget {
 
               return InfoBox(
                 label: 'selector: (_, obs) => obs.i_2',
-                color: _color(i_2),
+                color: asColor(i_2),
                 message: 'tick.a: $i_2\n\n'
                     'selector 仅在 tick.a 发生变化时收到通知, 在不关心其他成员变化的场景中非常适用',
               );
@@ -110,7 +110,7 @@ class PageBody extends StatelessWidget {
 
               return InfoBox(
                 label: 'selector: (_, obs) => obs.i_4',
-                color: _color(i_4),
+                color: asColor(i_4),
                 message: 'tick.b: $i_4\n\n'
                     'selector 仅在 tick.b 发生变化时收到通知, 在不关心其他成员变化的场景中非常适用',
               );
@@ -126,7 +126,7 @@ class PageBody extends StatelessWidget {
 
               return InfoBox(
                 label: 'context.read<Tick>() 点击调用+',
-                color: _color(_tick.i),
+                color: asColor(_tick.i),
                 message: '$_tick\n\n'
                     'context.read<Tick>() 在 builder 函数执行时获取 tick 的引用, 在 tick 对象发生变化时并不会刷新当前 widget, 适合用来在子节点调用顶层对象的函数',
                 child: ElevatedButton(
@@ -143,8 +143,4 @@ class PageBody extends StatelessWidget {
       ),
     );
   }
-}
-
-Color _color(int i) {
-  return vCardColors[i % vCardColors.length]!;
 }

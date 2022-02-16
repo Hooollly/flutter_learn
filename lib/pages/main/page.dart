@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_learn/pages/getx/page.dart';
 import 'package:flutter_learn/pages/provider/page.dart';
 
 /// 主页面
@@ -31,7 +32,7 @@ class _MainPageState extends State<MainPage> {
               child: Text('Provider'),
             ),
             TextButton(
-              onPressed: () => jump(ProviderDemoPage()),
+              onPressed: () => jump(GetXDemoPage()),
               child: Text('GetX'),
             ),
           ],
