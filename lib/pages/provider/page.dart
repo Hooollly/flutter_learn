@@ -8,9 +8,11 @@ import 'notifiers.dart';
 /// Provider 是对 InheritedWidget 的封装，如果对 InheritedWidget 不了解则需要先去熟悉一下
 ///
 /// Provider 使用 extension 对 BuildContext 进行了扩展，比较常用的有 context.read<T>() 和
-/// context.watch<T>()，BuildContext 本质上就是 Element，而 Inherited 则是通过调用 Element
+/// context.watch<T>().
+///
+/// BuildContext 本质上就是 Element，而 Inherited 则是通过调用 Element
 /// 的 markNeedsRebuild 来实现在屏幕绘制下一帧重新构建组件的。
-/// 所以使用时需要注意你使用哪个 context 就是代表哪个 Element 会被通知刷新。
+/// 所以使用时需要注意你使用哪个 context 就代表哪个 Element 会被通知刷新。
 ///
 dynamic readme;
 

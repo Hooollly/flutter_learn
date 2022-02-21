@@ -7,15 +7,14 @@ class Tick extends ChangeNotifier {
 
   int i_4 = 0;
 
-  increment() {
-    /// i 每次自增1
-    i++;
+  increment([int value = 1]) {
+    i += value;
 
-    /// a 每2次自增1
-    if (i % 2 == 0) i_2++;
+    ///
+    i_2 += i ~/ 2;
 
-    /// b 每4次自增1
-    if (i % 4 == 0) i_4++;
+    ///
+    i_4 += i ~/ 4;
 
     notifyListeners();
   }
